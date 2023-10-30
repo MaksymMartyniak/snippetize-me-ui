@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
+import GoogleButton from 'react-google-button'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
+const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+            console.log(codeResponse);
+            const tokens = await axios.post(
+                'http://localhost:8000/dj-rest-auth/google/', {
+                    code: codeResponse.code,
+                });
+
+            console.log(tokens);
+        },
+        onError: errorResponse => console.log(errorResponse),
+    });
+    return (
+        <GoogleButton
+          onClick={() => googleLogin()}
+        />
+    )
+}
 export default App;
